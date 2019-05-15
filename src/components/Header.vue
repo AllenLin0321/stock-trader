@@ -19,8 +19,8 @@
           <b-nav-item-dropdown class="mr-3">
             <!-- Using 'button-content' slot -->
             <template slot="button-content" >Save & Load</template>
-            <b-dropdown-item href="#">Save Data</b-dropdown-item>
-            <b-dropdown-item href="#">Load Data</b-dropdown-item>
+            <b-dropdown-item href="#" @click="saveData">Save Data</b-dropdown-item>
+            <b-dropdown-item href="#" @click="loadData">Load Data</b-dropdown-item>
           </b-nav-item-dropdown>
           
           <!-- Show the funds on the header -->
@@ -35,6 +35,7 @@
 <script>
 
   import { mapActions } from 'vuex';
+  import axios from 'axios';
 
   export default {
     computed: {
@@ -43,11 +44,23 @@
       }
     },
     methods: {
-      ...mapActions([
-        'randomizeStocks'
-      ]),
+      ...mapActions({
+        randomizeStocks: 'randomizeStocks',
+        fetchData: 'loadData'
+      }),
       endDay() {
         this.randomizeStocks();
+      },
+      saveData() {
+        const data = {
+          funds: this.$store.getters.funds,
+          stockPortfolio: this.$store.getters.stockPortfolio,
+          stocks: this.$store.getters.stocks
+        }
+        axios.put('data.json', data);
+      },
+      loadData() {
+        this.fetchData();
       }
     }
   }
