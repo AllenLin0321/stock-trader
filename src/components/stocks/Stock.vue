@@ -6,24 +6,32 @@
                 <small>(Price : {{ stock.price }})</small>
             </div>
             <b-row>
-                <b-col md="8">
+                <b-col md="6">
                     <b-form-input 
                         type="number" 
                         placeholder="Quantity"
                         class="float-left"
-                        v-model="quantity"></b-form-input>
+                        v-model="quantity"
+                        :class="{danger: insufficientFunds}"></b-form-input>
                 </b-col>
                 <b-col>
                     <b-button 
                         variant="success"
                         class="float-right"
                         @click="buyStock"
-                        :disabled="quantity <= 0 || Number.isInteger(quantity)">Buy</b-button>
+                        :disabled="insufficientFunds || quantity <= 0 || Number.isInteger(quantity)">
+                        {{ insufficientFunds? 'Insufficient Funds' : 'Buy' }}</b-button>
                 </b-col>
             </b-row>
         </b-card>
     </b-col>
 </template>
+
+<style scoped>
+    .danger {
+        border: 1px solid red;
+    }
+</style>
 
 <script>
     export default {
@@ -31,6 +39,14 @@
         data() {
             return {
                 quantity: 0
+            }
+        },
+        computed: {
+            funds() {
+                return this.$store.getters.funds;
+            },
+            insufficientFunds() {
+                return this.quantity * this.stock.price > this.funds;
             }
         },
         methods: {
